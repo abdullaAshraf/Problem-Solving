@@ -1,0 +1,52 @@
+/*
+	Author: Abdulla Ashraf
+
+	Idea:
+		- if number of cuts is more than n+m-2 it can not be cut k cuts without splitting a square
+		- we try to maximize the smallest area so the optimal is to try to make areas as equal as possible
+		- use all cuts in one direction first maximize the area size (can not prove)
+		- the optimal direction to start cutting from has something to do with the mod since we lose the reminder after the cut but try both direction is easier
+*/
+
+
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define pb push_back
+#define mp make_pair
+#define sz(x) ((int)(x).size())
+#define sqr(x) ((x) * (x))
+#define INF ((int)1e9)
+
+typedef long long ll;
+
+const int N = 10005;
+
+int main()
+{
+    ll n,m,k,c1,c2;
+    cin >> n >> m >> k;
+    if(n+m-2 < k)
+    {
+        cout << -1;
+        return 0;
+    }
+    if((k+1)>n)
+    {
+        ll r = k-n+1;
+        c1 = m/(r+1);
+    }
+    else
+        c1 = m*(n/(k+1));
+
+    if((k+1)>m)
+    {
+        ll r = k-m+1;
+        c2 = n/(r+1);
+    }
+    else
+        c2 = n*(m/(k+1));
+    cout << max(c1,c2);
+    return 0;
+}
