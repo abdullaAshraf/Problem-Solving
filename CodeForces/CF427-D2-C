@@ -1,0 +1,64 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+typedef long long ll;
+
+int const mod = 1000000007;
+
+bool vis[100005];
+int lo[100005], nu[100005], s = 1;
+int n, m, a, b, c[100005];
+vector<int> x[100005];
+
+ll cost = 0,ways = 1;
+
+vector<int> S;
+
+void go(int in) {
+	lo[in] = nu[in] = s++;
+	S.push_back(in);
+	vis[in] = 1;
+	for (int i = 0; i < x[in].size(); i++) {
+		if (nu[x[in][i]] == 0)
+			go(x[in][i]);
+		if (vis[x[in][i]])
+			lo[in] = min(lo[in], lo[x[in][i]]);
+	}
+	if(lo[in] == nu[in]){
+		int mn = c[in],mnc = 0;
+		while(1){
+			int v = S.back();
+			if(mn == c[v])mnc++;
+			else if(mn > c[v]){
+				mn = c[v];
+				mnc = 1;
+			}
+			vis[v] = 0;
+			S.pop_back();
+			if(v == in) break;
+
+		}
+		cost += mn;
+		ways = (ways * mnc)%mod;
+	}
+}
+
+int main() {
+	ios::sync_with_stdio(false);
+	cin >> n;
+	for (int i = 1; i <= n; i++)
+		cin >> c[i];
+	cin >> m;
+	for (int i = 0; i < m; i++) {
+		cin >> a >> b;
+		x[a].push_back(b);
+	}
+	for (int i = 1; i <= n; i++)
+		if (!nu[i]) {
+			go(i);
+		}
+	cout << cost << " " << ways << "\n";
+
+	return 0;
+}
