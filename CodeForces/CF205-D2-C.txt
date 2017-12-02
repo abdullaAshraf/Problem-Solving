@@ -34,11 +34,21 @@ ll power(ll x, ll y)
         return x*power(x, y/2)*power(x, y/2);
 }
 
+int Dig(ll x){
+    int a =0;
+    while(x){
+        x/=10;
+        a++;
+    }
+    return a;
+}
+
 ll lessThan(ll y)
 {
     if(y == 0)
         return 0;
-    int r = floor(log10(y))+1;
+
+    int r = Dig(y);
     ll s = 0;
     s+= (y/(ll)power(10,r-1)-1) * power(10,(max(r-2,0)));
     if(y/(ll)power(10,r-1) > y%10 )
