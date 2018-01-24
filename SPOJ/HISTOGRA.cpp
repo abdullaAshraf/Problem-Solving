@@ -1,7 +1,11 @@
 /*
 	Author: Abdulla Ashraf
 	Idea:
-        -
+        - the size of a rectangle is the number of piles x the min height amoung them
+	- start with maximizing one of the paramters (number of piles) by taking them all.
+	- to rasie the vaule of the other paramter we must get rid of the shortest pile
+	- so try all the piles on its left and on its right
+	- maximize all vaules in every cause to find the best answer.
 */
 
 
