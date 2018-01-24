@@ -1,7 +1,8 @@
 /*
 	Author: Abdulla Ashraf
 	Idea:
-        -
+        - something like trying to maximize the length of a consecutive subsequence whose sum is less than or equal to a value.
+	- but instead of normal summation we need to sum the max of m vaules where segment tree come in handy.
 */
 
 
