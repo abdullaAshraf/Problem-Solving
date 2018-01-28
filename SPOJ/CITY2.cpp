@@ -1,7 +1,7 @@
 /*
 	Author: Abdulla Ashraf
 	Idea:
-        -
+        -bo building can cover another building which is taller than it so if 2 building have the same height to be able to ocunt them as a single one there must be 0 shorter buildings between them
 */
 
 
