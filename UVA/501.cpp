@@ -1,7 +1,8 @@
 /*
 	Author: Abdulla Ashraf
 	Idea:
-        -
+        -use segment tree with k-th element queury
+	-remap elements to be able to hold them inside a tree
 */
 
 
