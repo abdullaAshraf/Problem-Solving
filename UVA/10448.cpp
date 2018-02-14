@@ -28,23 +28,15 @@ int x[51][51],mem[51][100005],p[51][51],s;
 
 int go(int in, int r)
 {
-    if(p[s][in] == s)
-    {
-        if(r == x[s][in])
-            return 1;
+    if(r == 0)
+        return 0;
+    if(p[s][in] == s || r < 0)
         return OO;
-    }
+
     int &ret = mem[in][r];
     if(ret != -1)
         return ret;
-    ret = OO;
-    r-= x[in][p[s][in]];
-    for(int i=1; r >= x[p[s][in]][in]; i+=2)
-    {
-        ret = min(ret,i+go(p[s][in],r));
-        r-= 2*x[in][p[s][in]];
-    }
-    return ret;
+    return ret = min(go(p[s][in],r),2+go(in,r-2*x[in][p[s][in]]));
 }
 
 int main()
@@ -83,16 +75,18 @@ int main()
             memset(mem,-1,sizeof mem);
             scanf("%d %d %d",&a,&b,&c);
             s = b;
-            int j = a;
+            int j = a,y=0;
             while (s != j)
             {
+                y++;
                 j = p[s][j];
                 for(int i=0; i<=c; i++)
                     mem[j][i] = -1;
             }
+
             for(int i=0; i<=c; i++)
                 mem[s][i] = -1;
-            int v = go(a,c);
+            int v = y+go(a,c-x[a][b]);
             if(v < OO)
                 printf("Yes %d\n",v);
             else
