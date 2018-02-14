@@ -1,7 +1,8 @@
 /*
 	Author: Abdulla Ashraf
 	Idea:
-        -
+        -each edge on the road can be used any odd number of times and the total cost is <=100000 so we can use dp [50][100000]
+	-use floyd to get the path from each node to every node
 */
 
 
