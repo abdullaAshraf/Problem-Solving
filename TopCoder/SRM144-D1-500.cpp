@@ -1,7 +1,15 @@
 /*
  Author: Abdulla Ashraf
  Idea:
- -
+ -we have 4 possiblities :
+	-unique & sorted: combinations
+	-unique & unsorted: permtations
+	-not unique & unsorted: choices ^ blanks
+	-not unique & sorted: dp
+-use dp to calculate the last one with mem[8][100]
+-at each call we can pick any number larger than or equal to the last picked value
+-stop when we reach blanks and return 1
+-return the sum of all possiable ways 
  */
 
 #include <bits/stdc++.h>
