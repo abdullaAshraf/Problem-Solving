@@ -1,7 +1,12 @@
 /*
  Author: Abdulla Ashraf
  Idea:
- -
+ 	-sort rules by starting point , in case of tie put shorter end first
+	-use dp memorizing the index of point and the number of done rules
+	-at each node if we added a wolf here loop over the current rule and keep increasing the number until u found a rule that starts after this point
+	-if we did not add a wolf just move to next wit hthe same rule count
+	-at anypoint if the end of the rule is shorter than the current index return 0
+	-if we reached last index return 1
  */
 
 #include <bits/stdc++.h>
