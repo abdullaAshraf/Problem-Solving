@@ -22,171 +22,103 @@ typedef long long ll;
 const int MOD = 7 + 1e9;
 const ll OO = (ll) 1 * 1e9;
 
-#define INF (1 << 31)
+#define INF (1 << 30)
 
-/* 2D Segment Tree node */
 struct Point {
-	int mx, mn, sum, lset, ladd, set;
+	int mx, mn, sum, lset, ladd;
 	Point() {
-		mx = mn = sum = ladd = lset = set = 0;
+		mx = mn = sum = ladd = lset = 0;
 	}
 };
 
-const int MAX = 8000005;
-Point T[MAX];
+struct seg {
+	vector<Point> T;
 
-struct Segtree2d {
-	int n, m;
-
-	// initialize and construct segment tree
-	void init(int n, int m) {
-		this->n = n;
-		this->m = m;
-		build(1, 1, 1, n, m);
+	seg(int n) {
+		n = 2 * n;
+		T.resize(4 * n, Point());
 	}
 
-	// build a 2D segment tree from data [ (a1, b1), (a2, b2) ]
-	// Time: O(n logn)
-	Point build(int node, int a1, int b1, int a2, int b2) {
-		// out of range
-		if (a1 > a2 or b1 > b2)
-			return def();
-
-		// if it is only a single index, assign value to node
-		if (a1 == a2 and b1 == b2)
-			return T[node] = Point();
-
-		// split the tree into four segments
-		T[node] = def();
-		T[node] = push(T[node],
-				build(4 * node - 2, a1, b1, (a1 + a2) / 2, (b1 + b2) / 2));
-		T[node] = push(T[node],
-				build(4 * node - 1, (a1 + a2) / 2 + 1, b1, a2, (b1 + b2) / 2));
-		T[node] = push(T[node],
-				build(4 * node + 0, a1, (b1 + b2) / 2 + 1, (a1 + a2) / 2, b2));
-		T[node] = push(T[node],
-				build(4 * node + 1, (a1 + a2) / 2 + 1, (b1 + b2) / 2 + 1, a2,
-						b2));
-		return T[node];
-	}
-
-	void down(int p, int x1, int y1, int x2, int y2) {
+	void down(int p, int l, int r) {
 		if (T[p].ladd) {
-			T[p].sum += (x2 - x1 + 1) * (y2 - y1 + 1) * T[p].ladd;
+			T[p].sum += (r - l + 1) * T[p].ladd;
 			T[p].mx += T[p].ladd;
 			T[p].mn += T[p].ladd;
-			for (int c = 4 * p - 2; c <= 4 * p + 1; c++)
-				if (c < MAX) {
-					if (T[c].set)
-						T[c].lset += T[p].ladd;
-					else
-						T[c].ladd += T[p].ladd;
-				}
+			if (l != r) {
+				if (T[2 * p].lset)
+					T[2 * p].lset += T[p].ladd;
+				else
+					T[2 * p].ladd += T[p].ladd;
+				if (T[2 * p + 1].lset)
+					T[2 * p + 1].lset += T[p].ladd;
+				else
+					T[2 * p + 1].ladd += T[p].ladd;
+			}
 			T[p].ladd = 0;
 		}
-		if (T[p].set) {
-			T[p].sum = (x2 - x1 + 1) * (y2 - y1 + 1) * T[p].lset;
+		if (T[p].lset) {
+			T[p].sum = (r - l + 1) * T[p].lset;
 			T[p].mx = T[p].lset;
 			T[p].mn = T[p].lset;
-			for (int c = 4 * p - 2; c <= 4 * p + 1; c++)
-				if (c < MAX) {
-					T[c].set = 1;
-					T[c].lset = T[p].lset;
-					T[c].ladd = 0;
-				}
-			T[p].set = T[p].lset = 0;
-		}
-	}
-
-	// helper function for query(int, int, int, int);
-	Point query(int node, int a1, int b1, int a2, int b2, int x1, int y1,
-			int x2, int y2) {
-		// if we out of range, return dummy
-		if (x1 > a2 or y1 > b2 or x2 < a1 or y2 < b1 or a1 > a2 or b1 > b2)
-			return def();
-
-		down(node, a1, b1, a2, b2);
-
-		// if it is within range, return the node
-		if (x1 <= a1 and y1 <= b1 and a2 <= x2 and b2 <= y2)
-			return T[node];
-
-		// split into four segments
-		Point val = def();
-		val = push(val,
-				query(4 * node - 2, a1, b1, (a1 + a2) / 2, (b1 + b2) / 2, x1,
-						y1, x2, y2));
-		val = push(val,
-				query(4 * node - 1, (a1 + a2) / 2 + 1, b1, a2, (b1 + b2) / 2,
-						x1, y1, x2, y2));
-		val = push(val,
-				query(4 * node + 0, a1, (b1 + b2) / 2 + 1, (a1 + a2) / 2, b2,
-						x1, y1, x2, y2));
-		val = push(val,
-				query(4 * node + 1, (a1 + a2) / 2 + 1, (b1 + b2) / 2 + 1, a2,
-						b2, x1, y1, x2, y2));
-		return val;
-	}
-
-	// query from range [ (x1, y1), (x2, y2) ]
-	// Time: O(logn)
-	Point query(int x1, int y1, int x2, int y2) {
-		return query(1, 1, 1, n, m, x1, y1, x2, y2);
-	}
-
-	// helper function for update(int, int, int);
-	Point update(int node, int a1, int b1, int a2, int b2, int x1, int y1,
-			int x2, int y2, int value, int t) {
-		if (a1 > a2 or b1 > b2)
-			return def();
-
-		down(node, a1, b1, a2, b2);
-
-		if (x1 > a2 or y1 > b2 or x2 < a1 or y2 < b1 or a1 > a2 or b1 > b2)
-			return T[node];
-
-		if (x1 <= a1 and y1 <= b1 and a2 <= x2 and b2 <= y2) {
-			if (t == 1)
-				T[node].ladd += value;
-			else {
-				T[node].set = 1;
-				T[node].lset = value;
+			if (l != r) {
+				T[2 * p].lset = T[2 * p + 1].lset = T[p].lset;
+				T[2 * p].ladd = T[2 * p + 1].ladd = 0;
 			}
-			down(node, a1, b1, a2, b2);
-			return T[node];
+			T[p].lset = 0;
+		}
+	}
+
+	void up(int p) {
+		T[p].sum = T[2 * p + 1].sum + T[2 * p].sum;
+		T[p].mx = max(T[2 * p + 1].mx, T[2 * p].mx);
+		T[p].mn = min(T[2 * p + 1].mn, T[2 * p].mn);
+	}
+
+	void updateRange(int cur, int l, int r, int x, int y, ll val, int t) {
+		int left = 2 * cur;
+		int right = 2 * cur + 1;
+		int mid = (l + r) / 2;
+
+		down(cur, l, r);
+
+		if (l > y || x > r)
+			return;
+
+		if (l >= x && r <= y) {
+			if (t == 1)
+				T[cur].ladd += val;
+			else
+				T[cur].lset = val;
+			down(cur, l, r);
+			return;
 		}
 
-		Point val = def();
-		val = push(val,
-				update(4 * node - 2, a1, b1, (a1 + a2) / 2, (b1 + b2) / 2, x1,
-						y1, x2, y2, value, t));
-		val = push(val,
-				update(4 * node - 1, (a1 + a2) / 2 + 1, b1, a2, (b1 + b2) / 2,
-						x1, y1, x2, y2, value, t));
-		val = push(val,
-				update(4 * node + 0, a1, (b1 + b2) / 2 + 1, (a1 + a2) / 2, b2,
-						x1, y1, x2, y2, value, t));
-		val = push(val,
-				update(4 * node + 1, (a1 + a2) / 2 + 1, (b1 + b2) / 2 + 1, a2,
-						b2, x1, y1, x2, y2, value, t));
-		return T[node] = val;
+		updateRange(left, l, mid, x, y, val, t);
+		updateRange(right, mid + 1, r, x, y, val, t);
+		up(cur);
 	}
 
-	// update the value of (x, y) index to 'value'
-	// Time: O(logn)
-	Point update(int x1, int y1, int x2, int y2, int value, int t) {
-		return update(1, 1, 1, n, m, x1, y1, x2, y2, value, t);
+	Point getAnswer(int cur, int l, int r, int x, int y) {
+		int left = 2 * cur;
+		int right = 2 * cur + 1;
+		int mid = (l + r) / 2;
+
+		down(cur, l, r);
+
+		if (y < l || x > r)
+			return def();
+		if (l >= x && r <= y)
+			return T[cur];
+
+		Point r1 = getAnswer(left, l, mid, x, y);
+		Point r2 = getAnswer(right, mid + 1, r, x, y);
+		Point ans;
+		ans.sum = r1.sum + r2.sum;
+		ans.mx = max(r1.mx, r2.mx);
+		ans.mn = min(r1.mn, r2.mn);
+		return ans;
 	}
 
-	// utility functions; these functions are virtual because they will be overridden in child class
-	Point push(Point a, Point b) {
-		a.mx = max(a.mx, b.mx);
-		a.mn = min(a.mn, b.mn);
-		a.sum = a.sum + b.sum;
-		return a;
-	}
-
-	// dummy node
 	Point def() {
 		Point p;
 		p.sum = 0;
@@ -199,15 +131,25 @@ struct Segtree2d {
 int main(void) {
 	int r, c, m, t, x1, x2, y1, y2, v;
 	while (cin >> r >> c >> m) {
-		Segtree2d sg;
-		sg.init(r, c);
+		vector<seg> sg;
+		for (int i = 0; i < c + 5; i++)
+			sg.push_back(seg(r + 5));
 		while (m--) {
 			cin >> t >> x1 >> y1 >> x2 >> y2;
 			if (t < 3) {
 				cin >> v;
-				sg.update(x1, y1, x2, y2, v, t);
+				for (int i = y1; i <= y2; i++)
+					sg[i].updateRange(1, 1, c, x1, x2, v, t);
 			} else {
-				Point ans = sg.query(x1, y1, x2, y2);
+				Point ans;
+				ans.mx = INT_MIN;
+				ans.mn = INT_MAX;
+				for (int i = y1; i <= y2; i++) {
+					Point v = sg[i].getAnswer(1, 1, c, x1, x2);
+					ans.sum += v.sum;
+					ans.mx = max(ans.mx, v.mx);
+					ans.mn = min(ans.mn, v.mn);
+				}
 				cout << ans.sum << " " << ans.mn << " " << ans.mx << "\n";
 			}
 		}
