@@ -1,0 +1,89 @@
+/*
+ Author: Abdulla Ashraf
+ Idea:
+ -generate the sequence untill it repeats
+ -apply required sequence on all starts with one loop and a map to save time
+ */
+
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define st first
+#define nd second
+#define pb push_back
+#define mp make_pair
+#define sz(x) ((int)(x).size())
+#define sqr(x) ((x) * (x))
+const double PI = acos(-1.0);
+const double EPS = 1e-9;
+
+typedef long long ll;
+#define INF 1000000007
+
+const int mod = 7 + 1e9;
+const int N = (1 << 19);
+const ll OO = (ll) 1 * 1e9;
+
+int v[500005];
+int c;
+
+bool repeated() {
+	for (int i = 0; i <= c / 2; i++)
+		if (v[i] != v[i + c / 2])
+			return 0;
+	return 1;
+}
+
+int main() {
+	cin.sync_with_stdio(0);
+	int T, m;
+	cin >> T;
+	for (int tt = 1; tt <= T; tt++) {
+		cin >> m;
+		if (m == 1) {
+			cout << "Case " << tt << ": " << 1 << "\n";
+			continue;
+		}
+		ll b = 1, s = 0, i = 2;
+		c = 2;
+		v[1] = 1;
+
+		while (1) {
+			ll t = b;
+			b = (s + 1) % m;
+			s = (s + t) % m;
+			v[c++] = b;
+			i++;
+			if (repeated())
+				break;
+		}
+		ll ss = 0;
+
+		map<int, int> x;
+		for (int j = 0; j < i / 2; j++) {
+			x[v[j]]++;
+			ss++;
+			for (auto it = x.cbegin(); it != x.cend();) {
+				if (it->first >= v[j])
+					break;
+				x[v[j]] += it->second;
+				ss += it->second;
+				it = x.erase(it);
+			}
+		}
+		int j = 0;
+		while (x.size() != 1) {
+			for (auto it = x.cbegin(); it != x.cend();) {
+				if (it->first >= v[j])
+					break;
+				x[v[j]] += it->second;
+				ss += it->second;
+				it = x.erase(it);
+			}
+			j = (j + 1) % (i / 2);
+		}
+		cout << "Case " << tt << ": " << ss << "\n";
+	}
+	return 0;
+}
