@@ -34,9 +34,13 @@ int solve(int n, int e) {
 	int total = 0;
 	for (int m = n; m >= 1; m--) {
 		e = min(e, m * (m - 1) / 2);
-		ll cnt = ((((c[n][m] * c[n][m]) % MOD * (fact[n - m] * fact[n - m])
-				% MOD) % MOD * (n - m + 1)) % MOD * dp[m][e]) % MOD;
-		total = (total + cnt) % MOD;
+		long long cnt = (((c[n][m] * c[n][m]) % MOD)
+				* ((fact[n - m] * fact[n - m]) % MOD)) % MOD;
+		cnt = (cnt * (n - m + 1)) % MOD;
+		cnt = (cnt * dp[m][e]) % MOD;
+		total += cnt;
+		if (total >= MOD)
+			total -= MOD;
 	}
 	return total;
 }
