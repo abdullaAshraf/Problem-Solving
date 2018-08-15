@@ -54,16 +54,12 @@ int main() {
 	for (int i = s.length() - 1; i >= 0; i--) {
 		int a = s[i] - 'a';
 		auto it = lower_bound(p[a].begin(), p[a].end(), c);
-		if (it == p[a].end()) {
+		if (it == p[a].end() || f[i] < *it) {
 			cout << "No";
 			return 0;
 		}
 		if (*it == c)
 			c--;
-		if (f[i] < *it) {
-			cout << "No";
-			return 0;
-		}
 	}
 	cout << "Yes";
 	return 0;
