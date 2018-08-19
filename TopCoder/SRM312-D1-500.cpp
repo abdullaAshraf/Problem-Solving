@@ -110,8 +110,10 @@ struct AntarcticaPolice {
 		scc();
 		computeCompGraph();
 		double avg = 0;
+        int v=0;
 		for (int i = 0; i < comps.size(); i++)
 			if (inDeg[i] == 0) {
+            	v++;
 				int mn = 2000, mni = 0;
 				for (int it : comps[i])
 					if (mn > costs[it]) {
@@ -121,14 +123,14 @@ struct AntarcticaPolice {
 				avg += mn;
 				costs[mni] = 2000;
 			}
-		avg /= cntSrc;
+		avg /= v;
 		sort(costs.begin(), costs.end());
 		int i = 0;
 		while (i < n && costs[i] < avg) {
-			avg = ((avg * cntSrc) + costs[i]) / (cntSrc + 1);
-			cntSrc++;
+			avg = ((avg * v) + costs[i]) / (v + 1);
+			v++;
+            i++;
 		}
 		return avg;
 	}
 };
-
